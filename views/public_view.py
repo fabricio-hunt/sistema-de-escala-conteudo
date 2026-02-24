@@ -24,6 +24,16 @@ class PublicView:
         st.title(f"{config.APP_ICON} {config.APP_TITLE}")
         st.markdown("### 📊 Visualização de Escalas e Feriados")
         
+        # Sidebar com link para o painel administrativo
+        with st.sidebar:
+            st.markdown("### ⚙️ Administração")
+            st.link_button(
+                "🔐 Acessar Painel Administrativo",
+                "https://sistema-de-escala-conteudo-85qz5pgzcl4n6gv5woxxx9.streamlit.app",
+                use_container_width=True
+            )
+            st.markdown("---")
+        
         # Seção de Escalas de Sexta-feira
         st.markdown("---")
         st.subheader("📅 Escalas de Sexta-feira")
