@@ -1,0 +1,9 @@
+streamlit
+supabase
+python-dotenv
+pandas
+bcrypt
+gotrue
+postgrest
+storage3
+realtime
