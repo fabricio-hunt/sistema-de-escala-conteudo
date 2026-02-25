@@ -7,15 +7,124 @@ from models.database import Database
 import config
 
 
-def _highlight_first_row(df: pd.DataFrame) -> list:
-    """Retorna estilos para destacar a primeira linha (próxima data) em verde"""
-    styles = []
-    for i in range(len(df)):
-        if i == 0:
-            styles.append(['background-color: #1B5E20; color: #FFFFFF; font-weight: bold'] * len(df.columns))
-        else:
-            styles.append([''] * len(df.columns))
-    return styles
+def _render_html_table_escalas(df: pd.DataFrame):
+    """Renderiza tabela HTML de escalas com a primeira linha destacada em vermelho claro"""
+    html = """
+    <style>
+        .escala-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .escala-table th {
+            background-color: #f0f2f6;
+            color: #31333F;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+            font-weight: 600;
+        }
+        .escala-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .escala-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .escala-table .highlight-row {
+            background-color: #FFCDD2 !important;
+            font-weight: bold;
+        }
+        .escala-table .highlight-row td {
+            color: #B71C1C;
+        }
+    </style>
+    <table class="escala-table">
+        <thead>
+            <tr>
+                <th>Nome do Colaborador</th>
+                <th>Data da Sexta-feira</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+    for i, row in df.iterrows():
+        row_class = 'highlight-row' if i == 0 else ''
+        html += f"""
+            <tr class="{row_class}">
+                <td>{row['nome']}</td>
+                <td>{row['data_formatada']}</td>
+            </tr>
+        """
+    html += """
+        </tbody>
+    </table>
+    """
+    return html
+
+
+def _render_html_table_feriados(df: pd.DataFrame):
+    """Renderiza tabela HTML de feriados com a primeira linha destacada em vermelho claro"""
+    html = """
+    <style>
+        .feriado-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .feriado-table th {
+            background-color: #f0f2f6;
+            color: #31333F;
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+            font-weight: 600;
+        }
+        .feriado-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #eee;
+        }
+        .feriado-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .feriado-table .highlight-row {
+            background-color: #FFCDD2 !important;
+            font-weight: bold;
+        }
+        .feriado-table .highlight-row td {
+            color: #B71C1C;
+        }
+    </style>
+    <table class="feriado-table">
+        <thead>
+            <tr>
+                <th>Nome do Colaborador</th>
+                <th>Nome do Feriado</th>
+                <th>Data do Feriado</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+    for i, row in df.iterrows():
+        row_class = 'highlight-row' if i == 0 else ''
+        html += f"""
+            <tr class="{row_class}">
+                <td>{row['nome_colaborador']}</td>
+                <td>{row['nome_feriado']}</td>
+                <td>{row['data_formatada']}</td>
+                <td>{row['time']}</td>
+            </tr>
+        """
+    html += """
+        </tbody>
+    </table>
+    """
+    return html
 
 
 class PublicView:
@@ -65,8 +174,8 @@ class PublicView:
         st.markdown(
             """
             <div style='display: flex; align-items: center; gap: 10px; margin-bottom: 10px;'>
-                <div style='width: 18px; height: 18px; background-color: #1B5E20; border-radius: 3px;'></div>
-                <span style='font-size: 0.9em; color: #555;'>🟢 Próxima data na escala (destaque)</span>
+                <div style='width: 18px; height: 18px; background-color: #FFCDD2; border: 1px solid #E57373; border-radius: 3px;'></div>
+                <span style='font-size: 0.9em; color: #555;'>🔴 Próxima data na escala (destaque)</span>
             </div>
             """,
             unsafe_allow_html=True
@@ -82,23 +191,13 @@ class PublicView:
             df_escalas = pd.DataFrame(escalas)
             
             # Ordenar por data ascendente (mais próxima primeiro)
-            df_escalas['data'] = pd.to_datetime(df_escalas['data'])
-            df_escalas = df_escalas.sort_values('data', ascending=True).reset_index(drop=True)
+            df_escalas['data_dt'] = pd.to_datetime(df_escalas['data'])
+            df_escalas = df_escalas.sort_values('data_dt', ascending=True).reset_index(drop=True)
+            df_escalas['data_formatada'] = df_escalas['data_dt'].dt.strftime('%d/%m/%Y')
             
-            df_display = df_escalas[['nome', 'data']].copy()
-            df_display.columns = ['Nome do Colaborador', 'Data da Sexta-feira']
-            df_display['Data da Sexta-feira'] = df_display['Data da Sexta-feira'].dt.strftime('%d/%m/%Y')
-            
-            # Aplicar estilo com destaque na primeira linha
-            styled = df_display.style.apply(
-                lambda x: _highlight_first_row(df_display)[x.name], axis=1
-            )
-            
-            st.dataframe(
-                styled,
-                use_container_width=True,
-                hide_index=True
-            )
+            # Renderizar tabela HTML com destaque
+            html_table = _render_html_table_escalas(df_escalas)
+            st.markdown(html_table, unsafe_allow_html=True)
         else:
             st.info("📭 Nenhuma escala cadastrada no momento.")
         
@@ -112,23 +211,13 @@ class PublicView:
             df_feriados = pd.DataFrame(feriados)
             
             # Ordenar por data ascendente (mais próxima primeiro)
-            df_feriados['data'] = pd.to_datetime(df_feriados['data'])
-            df_feriados = df_feriados.sort_values('data', ascending=True).reset_index(drop=True)
+            df_feriados['data_dt'] = pd.to_datetime(df_feriados['data'])
+            df_feriados = df_feriados.sort_values('data_dt', ascending=True).reset_index(drop=True)
+            df_feriados['data_formatada'] = df_feriados['data_dt'].dt.strftime('%d/%m/%Y')
             
-            df_display_f = df_feriados[['nome_colaborador', 'nome_feriado', 'data', 'time']].copy()
-            df_display_f.columns = ['Nome do Colaborador', 'Nome do Feriado', 'Data do Feriado', 'Time']
-            df_display_f['Data do Feriado'] = df_display_f['Data do Feriado'].dt.strftime('%d/%m/%Y')
-            
-            # Aplicar estilo com destaque na primeira linha
-            styled_f = df_display_f.style.apply(
-                lambda x: _highlight_first_row(df_display_f)[x.name], axis=1
-            )
-            
-            st.dataframe(
-                styled_f,
-                use_container_width=True,
-                hide_index=True
-            )
+            # Renderizar tabela HTML com destaque
+            html_table_f = _render_html_table_feriados(df_feriados)
+            st.markdown(html_table_f, unsafe_allow_html=True)
         else:
             st.info("📭 Nenhum feriado cadastrado no momento.")
         
