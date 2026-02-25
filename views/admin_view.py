@@ -36,6 +36,17 @@ class AdminView:
         """Renderiza o painel administrativo"""
         st.title(f"{config.APP_ICON} {config.APP_TITLE}")
         
+        # Limpeza automática de entradas com data passada
+        escalas_removed = self.db.delete_past_escalas()
+        feriados_removed = self.db.delete_past_feriados()
+        if escalas_removed > 0 or feriados_removed > 0:
+            msgs = []
+            if escalas_removed > 0:
+                msgs.append(f"{escalas_removed} escala(s)")
+            if feriados_removed > 0:
+                msgs.append(f"{feriados_removed} feriado(s)")
+            st.toast(f"🧹 Limpeza automática: {' e '.join(msgs)} com data passada removido(s).", icon="✅")
+        
         # Header com informações do usuário
         col1, col2 = st.columns([3, 1])
         with col1:

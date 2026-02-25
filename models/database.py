@@ -3,6 +3,7 @@ Camada de acesso ao banco de dados (Model)
 """
 from supabase import create_client, Client
 from typing import List, Dict, Optional
+from datetime import date
 import config
 
 
@@ -19,13 +20,26 @@ class Database:
     # ==================== ESCALAS DE SEXTA-FEIRA ====================
     
     def get_all_escalas(self) -> List[Dict]:
-        """Retorna todas as escalas de sexta-feira"""
+        """Retorna todas as escalas de sexta-feira ordenadas por data ascendente"""
         try:
-            response = self.client.table("escalas_sexta").select("*").order("data", desc=True).execute()
+            response = self.client.table("escalas_sexta").select("*").order("data", desc=False).execute()
             return response.data
         except Exception as e:
             print(f"Erro ao buscar escalas: {e}")
             return []
+    
+    def delete_past_escalas(self) -> int:
+        """Deleta escalas com data anterior a hoje e retorna quantidade deletada"""
+        try:
+            today_str = date.today().isoformat()
+            response = self.client.table("escalas_sexta").select("id").lt("data", today_str).execute()
+            count = len(response.data)
+            if count > 0:
+                self.client.table("escalas_sexta").delete().lt("data", today_str).execute()
+            return count
+        except Exception as e:
+            print(f"Erro ao deletar escalas passadas: {e}")
+            return 0
     
     def add_escala(self, nome: str, data: str) -> bool:
         """Adiciona uma nova escala de sexta-feira"""
@@ -63,13 +77,26 @@ class Database:
     # ==================== FERIADOS ====================
     
     def get_all_feriados(self) -> List[Dict]:
-        """Retorna todos os feriados"""
+        """Retorna todos os feriados ordenados por data ascendente"""
         try:
-            response = self.client.table("feriados").select("*").order("data", desc=True).execute()
+            response = self.client.table("feriados").select("*").order("data", desc=False).execute()
             return response.data
         except Exception as e:
             print(f"Erro ao buscar feriados: {e}")
             return []
+    
+    def delete_past_feriados(self) -> int:
+        """Deleta feriados com data anterior a hoje e retorna quantidade deletada"""
+        try:
+            today_str = date.today().isoformat()
+            response = self.client.table("feriados").select("id").lt("data", today_str).execute()
+            count = len(response.data)
+            if count > 0:
+                self.client.table("feriados").delete().lt("data", today_str).execute()
+            return count
+        except Exception as e:
+            print(f"Erro ao deletar feriados passados: {e}")
+            return 0
     
     def add_feriado(self, nome_colaborador: str, nome_feriado: str, data: str, time: str) -> bool:
         """Adiciona um novo feriado"""
