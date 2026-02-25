@@ -2,129 +2,96 @@
 View da Tela Pública (Visualização)
 """
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 from models.database import Database
 import config
 
 
-def _render_html_table_escalas(df: pd.DataFrame):
-    """Renderiza tabela HTML de escalas com a primeira linha destacada em vermelho claro"""
-    html = """
-    <style>
-        .escala-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: 'Source Sans Pro', sans-serif;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .escala-table th {
-            background-color: #f0f2f6;
-            color: #31333F;
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 2px solid #ddd;
-            font-weight: 600;
-        }
-        .escala-table td {
-            padding: 10px 16px;
-            border-bottom: 1px solid #eee;
-        }
-        .escala-table tr:hover {
-            background-color: #f8f9fa;
-        }
-        .escala-table .highlight-row {
-            background-color: #FFCDD2 !important;
-            font-weight: bold;
-        }
-        .escala-table .highlight-row td {
-            color: #B71C1C;
-        }
-    </style>
-    <table class="escala-table">
-        <thead>
-            <tr>
-                <th>Nome do Colaborador</th>
-                <th>Data da Sexta-feira</th>
-            </tr>
-        </thead>
-        <tbody>
-    """
+def _build_escalas_html(df: pd.DataFrame) -> str:
+    """Constrói HTML da tabela de escalas com destaque na primeira linha"""
+    rows_html = ""
     for i, row in df.iterrows():
-        row_class = 'highlight-row' if i == 0 else ''
-        html += f"""
-            <tr class="{row_class}">
+        if i == 0:
+            rows_html += f"""
+            <tr style="background-color: #FFCDD2; font-weight: bold;">
+                <td style="color: #B71C1C;">{row['nome']}</td>
+                <td style="color: #B71C1C;">{row['data_formatada']}</td>
+            </tr>"""
+        else:
+            rows_html += f"""
+            <tr>
                 <td>{row['nome']}</td>
                 <td>{row['data_formatada']}</td>
-            </tr>
-        """
-    html += """
-        </tbody>
-    </table>
-    """
-    return html
+            </tr>"""
 
-
-def _render_html_table_feriados(df: pd.DataFrame):
-    """Renderiza tabela HTML de feriados com a primeira linha destacada em vermelho claro"""
-    html = """
+    height = 48 + len(df) * 45 + 10
+    html = f"""
+    <div style="font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f0f2f6;">
+                    <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid #ddd; color: #31333F; font-weight: 600;">Nome do Colaborador</th>
+                    <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid #ddd; color: #31333F; font-weight: 600;">Data da Sexta-feira</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows_html}
+            </tbody>
+        </table>
+    </div>
     <style>
-        .feriado-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: 'Source Sans Pro', sans-serif;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .feriado-table th {
-            background-color: #f0f2f6;
-            color: #31333F;
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 2px solid #ddd;
-            font-weight: 600;
-        }
-        .feriado-table td {
-            padding: 10px 16px;
-            border-bottom: 1px solid #eee;
-        }
-        .feriado-table tr:hover {
-            background-color: #f8f9fa;
-        }
-        .feriado-table .highlight-row {
-            background-color: #FFCDD2 !important;
-            font-weight: bold;
-        }
-        .feriado-table .highlight-row td {
-            color: #B71C1C;
-        }
+        table td {{ padding: 10px 16px; border-bottom: 1px solid #eee; }}
+        table tr:hover {{ background-color: #f8f9fa; }}
     </style>
-    <table class="feriado-table">
-        <thead>
-            <tr>
-                <th>Nome do Colaborador</th>
-                <th>Nome do Feriado</th>
-                <th>Data do Feriado</th>
-                <th>Time</th>
-            </tr>
-        </thead>
-        <tbody>
     """
+    return html, height
+
+
+def _build_feriados_html(df: pd.DataFrame) -> str:
+    """Constrói HTML da tabela de feriados com destaque na primeira linha"""
+    rows_html = ""
     for i, row in df.iterrows():
-        row_class = 'highlight-row' if i == 0 else ''
-        html += f"""
-            <tr class="{row_class}">
+        if i == 0:
+            rows_html += f"""
+            <tr style="background-color: #FFCDD2; font-weight: bold;">
+                <td style="color: #B71C1C;">{row['nome_colaborador']}</td>
+                <td style="color: #B71C1C;">{row['nome_feriado']}</td>
+                <td style="color: #B71C1C;">{row['data_formatada']}</td>
+                <td style="color: #B71C1C;">{row['time']}</td>
+            </tr>"""
+        else:
+            rows_html += f"""
+            <tr>
                 <td>{row['nome_colaborador']}</td>
                 <td>{row['nome_feriado']}</td>
                 <td>{row['data_formatada']}</td>
                 <td>{row['time']}</td>
-            </tr>
-        """
-    html += """
-        </tbody>
-    </table>
+            </tr>"""
+
+    height = 48 + len(df) * 45 + 10
+    html = f"""
+    <div style="font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #f0f2f6;">
+                    <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid #ddd; color: #31333F; font-weight: 600;">Nome do Colaborador</th>
+                    <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid #ddd; color: #31333F; font-weight: 600;">Nome do Feriado</th>
+                    <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid #ddd; color: #31333F; font-weight: 600;">Data do Feriado</th>
+                    <th style="padding: 12px 16px; text-align: left; border-bottom: 2px solid #ddd; color: #31333F; font-weight: 600;">Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows_html}
+            </tbody>
+        </table>
+    </div>
+    <style>
+        table td {{ padding: 10px 16px; border-bottom: 1px solid #eee; }}
+        table tr:hover {{ background-color: #f8f9fa; }}
+    </style>
     """
-    return html
+    return html, height
 
 
 class PublicView:
@@ -170,17 +137,6 @@ class PublicView:
             )
             st.markdown("---")
         
-        # Legenda de cores
-        st.markdown(
-            """
-            <div style='display: flex; align-items: center; gap: 10px; margin-bottom: 10px;'>
-                <div style='width: 18px; height: 18px; background-color: #FFCDD2; border: 1px solid #E57373; border-radius: 3px;'></div>
-                <span style='font-size: 0.9em; color: #555;'>🔴 Próxima data na escala (destaque)</span>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-        
         # Seção de Escalas de Sexta-feira
         st.markdown("---")
         st.subheader("📅 Escalas de Sexta-feira")
@@ -195,9 +151,8 @@ class PublicView:
             df_escalas = df_escalas.sort_values('data_dt', ascending=True).reset_index(drop=True)
             df_escalas['data_formatada'] = df_escalas['data_dt'].dt.strftime('%d/%m/%Y')
             
-            # Renderizar tabela HTML com destaque
-            html_table = _render_html_table_escalas(df_escalas)
-            st.markdown(html_table, unsafe_allow_html=True)
+            html, height = _build_escalas_html(df_escalas)
+            components.html(html, height=height, scrolling=False)
         else:
             st.info("📭 Nenhuma escala cadastrada no momento.")
         
@@ -215,9 +170,8 @@ class PublicView:
             df_feriados = df_feriados.sort_values('data_dt', ascending=True).reset_index(drop=True)
             df_feriados['data_formatada'] = df_feriados['data_dt'].dt.strftime('%d/%m/%Y')
             
-            # Renderizar tabela HTML com destaque
-            html_table_f = _render_html_table_feriados(df_feriados)
-            st.markdown(html_table_f, unsafe_allow_html=True)
+            html_f, height_f = _build_feriados_html(df_feriados)
+            components.html(html_f, height=height_f, scrolling=False)
         else:
             st.info("📭 Nenhum feriado cadastrado no momento.")
         
