@@ -108,6 +108,7 @@ streamlit run admin.py
 - Adicionar feriados
 - Editar feriados
 - Deletar feriados
+- 🧹 **Limpeza automatica** de escalas e feriados com data passada ao acessar o painel
 
 ### Tela Publica (Visualizacao)
 
@@ -118,6 +119,9 @@ streamlit run public.py
 **Funcionalidades:**
 - Visualizacao de todas as escalas de sexta-feira
 - Visualizacao de todos os feriados
+- 📅 **Ordenacao por data ascendente** — a data mais proxima (recente) sempre aparece no topo da tabela
+- 🔴 **Destaque visual** — a primeira linha (proxima data) e destacada em vermelho claro para facil identificacao
+- 🧹 **Limpeza automatica** — entradas com data passada sao deletadas automaticamente ao carregar a pagina
 - Sem necessidade de login
 - Interface limpa e responsiva
 
