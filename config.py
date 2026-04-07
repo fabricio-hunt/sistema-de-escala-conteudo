@@ -56,8 +56,9 @@ ADMIN_EMAILS = [
     "carolinacosta@bemol.com.br"
 ]
 
-# Senha padrão (em produção, usar hash)
-ADMIN_PASSWORD = get_config("ADMIN_PASSWORD", "Bemol@2026")
+# Senha admin (em formato de hash bcrypt). 
+# O valor default abaixo é o hash para "Bemol@2026"
+ADMIN_PASSWORD_HASH = get_config("ADMIN_PASSWORD_HASH", "$2b$12$T0yuHUDIzaD8P3InIrvyg.HbjxGv.qzb1.uiI9AwPUyKAoJkFe0aS")
 
 # Times disponíveis
 TIMES = ["Cadastro", "SEO", "FrontEnd"]

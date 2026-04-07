@@ -15,8 +15,16 @@ class AuthController:
     
     @staticmethod
     def verify_password(password: str) -> bool:
-        """Verifica se a senha está correta"""
-        return password == config.ADMIN_PASSWORD
+        """Verifica se a senha está correta usando bcrypt hash"""
+        import bcrypt
+        try:
+            return bcrypt.checkpw(
+                password.encode('utf-8'), 
+                config.ADMIN_PASSWORD_HASH.encode('utf-8')
+            )
+        except Exception as e:
+            print(f"Erro de verificação bcrypt: {e}")
+            return False
     
     @staticmethod
     def login(email: str, password: str) -> bool:
