@@ -1,9 +1,5 @@
 streamlit
-supabase
+databricks-sql-connector
 python-dotenv
 pandas
 bcrypt
-gotrue
-postgrest
-storage3
-realtime

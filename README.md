@@ -9,7 +9,7 @@ O projeto segue o padrao MVC (Model-View-Controller):
 ```
 sistema-de-escala-conteudo-bol/
 ├── models/
-│   └── database.py          # Camada de acesso ao banco (Supabase)
+│   └── database.py          # Camada de acesso ao banco (Databricks)
 ├── views/
 │   ├── admin_view.py        # Interface administrativa
 │   └── public_view.py       # Interface publica
@@ -57,36 +57,20 @@ pip install -r requirements.txt
 Crie um arquivo .env baseado no .env.example:
 
 ```env
-SUPABASE_URL=sua_url_do_supabase
-SUPABASE_KEY=sua_chave_anonima_do_supabase
+DATABRICKS_SERVER_HOSTNAME=adb-926216925051160.0.azuredatabricks.net
+DATABRICKS_HTTP_PATH=sql/protocolv1/o/926216925051160/0325-154030-toes330
+DATABRICKS_TOKEN=seu_personal_access_token_aqui
 ADMIN_PASSWORD=sua_senha_segura
 ```
 
-### 5. Configure o Supabase
+### 5. Configure o Databricks
 
-Crie as seguintes tabelas no Supabase:
+Para inicializar as tabelas `escalas_sexta` e `feriados` no Databricks, certifique-se de que configurou as variáveis no arquivo `.env` e, em seguida, execute o script de inicialização do banco:
 
-#### Tabela: escalas_sexta
-```sql
-CREATE TABLE escalas_sexta (
-  id BIGSERIAL PRIMARY KEY,
-  nome TEXT NOT NULL,
-  data DATE NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+```bash
+python setup_database.py
 ```
 
-#### Tabela: feriados
-```sql
-CREATE TABLE feriados (
-  id BIGSERIAL PRIMARY KEY,
-  nome_colaborador TEXT NOT NULL,
-  nome_feriado TEXT NOT NULL,
-  data DATE NOT NULL,
-  time TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-```
 
 ## Uso
 
@@ -132,8 +116,9 @@ streamlit run public.py
 3. Conecte seu repositorio
 4. Configure os Secrets no Streamlit Cloud:
    ```toml
-   SUPABASE_URL = "sua_url_do_supabase"
-   SUPABASE_KEY = "sua_chave_anonima_do_supabase"
+   DATABRICKS_SERVER_HOSTNAME = "adb-926216925051160.0.azuredatabricks.net"
+   DATABRICKS_HTTP_PATH = "sql/protocolv1/o/926216925051160/0325-154030-toes330"
+   DATABRICKS_TOKEN = "seu_personal_access_token_aqui"
    ADMIN_PASSWORD = "sua_senha_segura"
    ```
 5. Deploy automatico!
@@ -142,7 +127,7 @@ streamlit run public.py
 
 - Python 3.x
 - Streamlit - Framework web
-- Supabase - Banco de dados PostgreSQL
+- Databricks - Cloud Data Platform
 - python-dotenv - Gerenciamento de variaveis de ambiente
 - pandas - Manipulacao de dados
 

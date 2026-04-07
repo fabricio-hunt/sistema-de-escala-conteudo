@@ -43,9 +43,10 @@ def get_config(key: str, default: str = "") -> str:
         
     return value
 
-# Configurações do Supabase
-SUPABASE_URL = get_config("SUPABASE_URL", "https://ewgkfpbbdylakbxtndnh.supabase.co")
-SUPABASE_KEY = get_config("SUPABASE_KEY", "")
+# Configurações do Databricks
+DATABRICKS_SERVER_HOSTNAME = get_config("DATABRICKS_SERVER_HOSTNAME", "adb-926216925051160.0.azuredatabricks.net")
+DATABRICKS_HTTP_PATH = get_config("DATABRICKS_HTTP_PATH", "sql/protocolv1/o/926216925051160/0325-154030-toes330")
+DATABRICKS_TOKEN = get_config("DATABRICKS_TOKEN", "")
 
 # Lista de emails de administradores autorizados
 ADMIN_EMAILS = [
