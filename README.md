@@ -1,136 +1,166 @@
-# Sistema de Escala Conteudo BOL
-
-Sistema de gerenciamento de escalas de sexta-feira e feriados para a equipe de conteudo da BEMOL.
-
-## Arquitetura
-
-O projeto segue o padrao MVC (Model-View-Controller):
-
+📅 BOL Content Schedule System
+> A schedule management system for Friday shifts and holidays, built for the **BEMOL Content Team**.
+![CI Pipeline](https://github.com/YOUR_ORG/sistema-de-escala-conteudo-bol/actions/workflows/ci.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
+![Streamlit](https://img.shields.io/badge/streamlit-framework-red.svg)
+![Databricks](https://img.shields.io/badge/databricks-cloud-orange.svg)
+---
+Overview
+The BOL Content Schedule System is a web-based application that manages Friday shift schedules and holiday entries for BEMOL's content team. It provides a password-protected admin panel for managing records and a public-facing view for team visibility — backed by Databricks as the data platform.
+---
+Architecture
+The project follows the MVC (Model-View-Controller) pattern:
 ```
 sistema-de-escala-conteudo-bol/
 ├── models/
-│   └── database.py          # Camada de acesso ao banco (Databricks)
+│   └── database.py          # Data access layer (Databricks)
 ├── views/
-│   ├── admin_view.py        # Interface administrativa
-│   └── public_view.py       # Interface publica
+│   ├── admin_view.py        # Admin interface
+│   └── public_view.py       # Public interface
 ├── controllers/
-│   └── auth.py              # Controle de autenticacao
-├── admin.py                 # Aplicacao Streamlit (Admin)
-├── public.py                # Aplicacao Streamlit (Publico)
-├── config.py                # Configuracoes centralizadas
-├── requirements.txt         # Dependencias Python
-├── .env                     # Variaveis de ambiente (NAO COMMITAR)
-└── .env.example             # Template de variaveis
+│   └── auth.py              # Authentication logic
+├── admin.py                 # Streamlit app (Admin)
+├── public.py                # Streamlit app (Public)
+├── config.py                # Centralized configuration
+├── setup_database.py        # Database initialization script
+├── requirements.txt         # Python dependencies
+├── .env                     # Environment variables (DO NOT COMMIT)
+└── .env.example             # Environment variables template
 ```
-
-## Seguranca
-
-- Credenciais armazenadas em variaveis de ambiente (.env)
-- .gitignore configurado para proteger dados sensiveis
-- Autenticacao obrigatoria para area administrativa
-- Lista restrita de emails autorizados
-- Separacao clara entre tela publica e administrativa
-
-## Instalacao
-
-### 1. Clone o repositorio
-
+---
+Security
+Credentials stored in environment variables via `.env`
+`.gitignore` configured to protect sensitive data
+Authentication required to access the admin area
+Restricted list of authorized email addresses
+Clear separation between the public view and the admin panel
+---
+Getting Started
+1. Clone the repository
 ```bash
-cd "c:\Users\fabricio.barauna\OneDrive - BEMOL S A\Documentos\sistema-de-escala-conteudo-bol"
+git clone https://github.com/YOUR_ORG/sistema-de-escala-conteudo-bol.git
+cd sistema-de-escala-conteudo-bol
 ```
-
-### 2. Crie um ambiente virtual
-
+2. Create a virtual environment
 ```bash
 python -m venv venv
+# Windows
 .\venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
 ```
-
-### 3. Instale as dependencias
-
+3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
-
-### 4. Configure as variaveis de ambiente
-
-Crie um arquivo .env baseado no .env.example:
-
+4. Configure environment variables
+Create a `.env` file based on the provided template:
+```bash
+cp .env.example .env
+```
+Then fill in your values:
 ```env
 DATABRICKS_SERVER_HOSTNAME=adb-926216925051160.0.azuredatabricks.net
 DATABRICKS_HTTP_PATH=sql/protocolv1/o/926216925051160/0325-154030-toes330
-DATABRICKS_TOKEN=seu_personal_access_token_aqui
-ADMIN_PASSWORD=sua_senha_segura
+DATABRICKS_TOKEN=your_personal_access_token_here
+ADMIN_PASSWORD=your_secure_password_here
 ```
-
-### 5. Configure o Databricks
-
-Para inicializar as tabelas `escalas_sexta` e `feriados` no Databricks, certifique-se de que configurou as variáveis no arquivo `.env` e, em seguida, execute o script de inicialização do banco:
-
+5. Initialize the database
+Ensure your `.env` is configured, then run the setup script to create the `escalas_sexta` and `feriados` tables on Databricks:
 ```bash
 python setup_database.py
 ```
-
-
-## Uso
-
-### Tela Administrativa (Admin)
-
+---
+Usage
+Admin Panel
 ```bash
 streamlit run admin.py
 ```
-
-**Credenciais de acesso:**
-- Emails autorizados (configurados em config.py)
-- Senha: (configurada no arquivo .env)
-
-**Funcionalidades:**
-- Login seguro
-- Adicionar escalas de sexta-feira
-- Editar escalas existentes
-- Deletar escalas
-- Adicionar feriados
-- Editar feriados
-- Deletar feriados
-- 🧹 **Limpeza automatica** de escalas e feriados com data passada ao acessar o painel
-
-### Tela Publica (Visualizacao)
-
+Access credentials:
+Authorized emails (configured in `config.py`)
+Password (configured in `.env`)
+Features:
+Secure login
+Add, edit, and delete Friday shift schedules
+Add, edit, and delete holiday entries
+🧹 Auto-cleanup — past schedules and holidays are automatically removed on login
+---
+Public View
 ```bash
 streamlit run public.py
 ```
+Features:
+View all Friday shift schedules
+View all upcoming holidays
+📅 Ascending date order — the next upcoming date always appears at the top
+🔴 Visual highlight — the first row (next date) is highlighted in light red for quick identification
+🧹 Auto-cleanup — past entries are automatically removed on page load
+No login required
+Clean and responsive interface
+---
+CI/CD
+This project uses GitHub Actions for continuous integration. The pipeline runs automatically on every push or pull request to `main` / `master`.
+Pipeline: `ci.yml`
+```yaml
+name: CI Pipeline
 
-**Funcionalidades:**
-- Visualizacao de todas as escalas de sexta-feira
-- Visualizacao de todos os feriados
-- 📅 **Ordenacao por data ascendente** — a data mais proxima (recente) sempre aparece no topo da tabela
-- 🔴 **Destaque visual** — a primeira linha (proxima data) e destacada em vermelho claro para facil identificacao
-- 🧹 **Limpeza automatica** — entradas com data passada sao deletadas automaticamente ao carregar a pagina
-- Sem necessidade de login
-- Interface limpa e responsiva
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
 
-## Deploy no Streamlit Cloud
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-1. Faca push do codigo para o GitHub
-2. Acesse share.streamlit.io
-3. Conecte seu repositorio
-4. Configure os Secrets no Streamlit Cloud:
-   ```toml
-   DATABRICKS_SERVER_HOSTNAME = "adb-926216925051160.0.azuredatabricks.net"
-   DATABRICKS_HTTP_PATH = "sql/protocolv1/o/926216925051160/0325-154030-toes330"
-   DATABRICKS_TOKEN = "seu_personal_access_token_aqui"
-   ADMIN_PASSWORD = "sua_senha_segura"
-   ```
-5. Deploy automatico!
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-## Tecnologias
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
 
-- Python 3.x
-- Streamlit - Framework web
-- Databricks - Cloud Data Platform
-- python-dotenv - Gerenciamento de variaveis de ambiente
-- pandas - Manipulacao de dados
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-## Licenca
-
-Propriedade de BEMOL S.A.
+      - name: Syntax Check
+        run: |
+          python -m py_compile admin.py
+          python -m py_compile public.py
+```
+What the pipeline checks:
+Step	Description
+Checkout	Pulls the latest code from the repository
+Set up Python	Configures Python 3.10 on the runner
+Install Dependencies	Installs all packages from `requirements.txt`
+Syntax Check	Validates `admin.py` and `public.py` for syntax errors
+> To add this workflow, save the file as `.github/workflows/ci.yml` in your repository.
+---
+Deployment on Streamlit Cloud
+Push your code to GitHub
+Go to share.streamlit.io
+Connect your repository
+Configure Secrets in the Streamlit Cloud dashboard:
+```toml
+DATABRICKS_SERVER_HOSTNAME = "adb-926216925051160.0.azuredatabricks.net"
+DATABRICKS_HTTP_PATH = "sql/protocolv1/o/926216925051160/0325-154030-toes330"
+DATABRICKS_TOKEN = "your_personal_access_token_here"
+ADMIN_PASSWORD = "your_secure_password_here"
+```
+Deploy — Streamlit Cloud handles the rest automatically.
+---
+Tech Stack
+Technology	Purpose
+Python 3.10+	Core language
+Streamlit	Web framework
+Databricks	Cloud data platform
+python-dotenv	Environment variable management
+pandas	Data manipulation
+---
+License
+Proprietary — © BEMOL S.A. All rights reserved.
