@@ -69,6 +69,8 @@ class Database:
                     connection.commit()
             return True
         except Exception as e:
+            import streamlit as st
+            st.error(f"Databricks Error (add_escala): {str(e)}")
             print(f"Erro ao adicionar escala: {e}")
             return False
     
