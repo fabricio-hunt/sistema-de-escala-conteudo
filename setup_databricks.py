@@ -36,6 +36,7 @@ def setup_database():
                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
                   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
                 )
+                TBLPROPERTIES ('delta.feature.allowColumnDefaults' = 'supported')
                 """)
 
                 print("Criando tabela feriados...")
@@ -49,6 +50,7 @@ def setup_database():
                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP(),
                   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
                 )
+                TBLPROPERTIES ('delta.feature.allowColumnDefaults' = 'supported')
                 """)
                 # In Databricks we cannot easily add check constraints in Delta like we did in postgres, but we can manage that logically. 
                 # Constraints can be added with ALTER TABLE ADD CONSTRAINT time_chk CHECK (time IN ('Cadastro', 'SEO', 'FrontEnd'))
