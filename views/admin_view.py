@@ -75,12 +75,13 @@ class AdminView:
         with st.expander("➕ Adicionar Nova Escala", expanded=False):
             with st.form("add_escala_form"):
                 nome = st.text_input("Nome do Colaborador")
+                email = st.selectbox("E-mail do Colaborador", config.EMAILS_BEMOL)
                 data = st.date_input("Data da Sexta-feira", value=date.today())
                 submit = st.form_submit_button("Adicionar Escala", use_container_width=True)
                 
                 if submit:
                     if nome.strip():
-                        if self.db.add_escala(nome, str(data)):
+                        if self.db.add_escala(nome, email, str(data)):
                             st.success("✅ Escala adicionada com sucesso!")
                             st.rerun()
                         else:
@@ -98,7 +99,7 @@ class AdminView:
                     col1, col2, col3, col4 = st.columns([3, 2, 1, 1])
                     
                     with col1:
-                        st.text(f"👤 {escala['nome']}")
+                        st.markdown(f"👤 **{escala['nome']}**<br><small>{escala['email']}</small>", unsafe_allow_html=True)
                     with col2:
                         st.text(f"📅 {escala['data']}")
                     with col3:
@@ -115,6 +116,8 @@ class AdminView:
                     if st.session_state.get(f"editing_escala_{escala['id']}", False):
                         with st.form(f"edit_form_escala_{escala['id']}"):
                             new_nome = st.text_input("Nome", value=escala['nome'])
+                            email_idx = config.EMAILS_BEMOL.index(escala['email']) if escala.get('email') in config.EMAILS_BEMOL else 0
+                            new_email = st.selectbox("E-mail", config.EMAILS_BEMOL, index=email_idx)
                             new_data = st.date_input("Data", value=pd.to_datetime(escala['data']).date())
                             col_save, col_cancel = st.columns(2)
                             
@@ -124,7 +127,7 @@ class AdminView:
                                 cancel = st.form_submit_button("❌ Cancelar", use_container_width=True)
                             
                             if save:
-                                if self.db.update_escala(escala['id'], new_nome, str(new_data)):
+                                if self.db.update_escala(escala['id'], new_nome, new_email, str(new_data)):
                                     st.session_state[f"editing_escala_{escala['id']}"] = False
                                     st.success("Atualizado!")
                                     st.rerun()
@@ -145,6 +148,7 @@ class AdminView:
         with st.expander("➕ Adicionar Novo Feriado", expanded=False):
             with st.form("add_feriado_form"):
                 nome_colaborador = st.text_input("Nome do Colaborador")
+                email = st.selectbox("E-mail do Colaborador", config.EMAILS_BEMOL)
                 nome_feriado = st.text_input("Nome do Feriado")
                 data = st.date_input("Data do Feriado", value=date.today())
                 time = st.selectbox("Time", config.TIMES)
@@ -152,7 +156,7 @@ class AdminView:
                 
                 if submit:
                     if nome_colaborador.strip() and nome_feriado.strip():
-                        if self.db.add_feriado(nome_colaborador, nome_feriado, str(data), time):
+                        if self.db.add_feriado(nome_colaborador, email, nome_feriado, str(data), time):
                             st.success("✅ Feriado adicionado com sucesso!")
                             st.rerun()
                         else:
@@ -170,7 +174,7 @@ class AdminView:
                     col1, col2, col3, col4, col5, col6 = st.columns([2, 2, 2, 1, 1, 1])
                     
                     with col1:
-                        st.text(f"👤 {feriado['nome_colaborador']}")
+                        st.markdown(f"👤 **{feriado['nome_colaborador']}**<br><small>{feriado['email']}</small>", unsafe_allow_html=True)
                     with col2:
                         st.text(f"🎉 {feriado['nome_feriado']}")
                     with col3:
@@ -191,6 +195,8 @@ class AdminView:
                     if st.session_state.get(f"editing_feriado_{feriado['id']}", False):
                         with st.form(f"edit_form_feriado_{feriado['id']}"):
                             new_nome_colaborador = st.text_input("Colaborador", value=feriado['nome_colaborador'])
+                            email_idx = config.EMAILS_BEMOL.index(feriado['email']) if feriado.get('email') in config.EMAILS_BEMOL else 0
+                            new_email = st.selectbox("E-mail", config.EMAILS_BEMOL, index=email_idx)
                             new_nome_feriado = st.text_input("Feriado", value=feriado['nome_feriado'])
                             new_data = st.date_input("Data", value=pd.to_datetime(feriado['data']).date())
                             new_time = st.selectbox("Time", config.TIMES, 
@@ -205,7 +211,7 @@ class AdminView:
                             
                             if save:
                                 if self.db.update_feriado(feriado['id'], new_nome_colaborador, 
-                                                         new_nome_feriado, str(new_data), new_time):
+                                                         new_email, new_nome_feriado, str(new_data), new_time):
                                     st.session_state[f"editing_feriado_{feriado['id']}"] = False
                                     st.success("Atualizado!")
                                     st.rerun()

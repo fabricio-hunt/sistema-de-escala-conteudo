@@ -60,6 +60,19 @@ ADMIN_EMAILS = [
 # O valor default abaixo é o hash para "Bemol@2026"
 ADMIN_PASSWORD_HASH = get_config("ADMIN_PASSWORD_HASH", "$2b$12$T0yuHUDIzaD8P3InIrvyg.HbjxGv.qzb1.uiI9AwPUyKAoJkFe0aS")
 
+# Lista de E-mails Gerais de Colaboradores
+EMAILS_BEMOL = [
+    "ricksonguedes@bemol.com.br",
+    "carolinacosta@bemol.com.br",
+    "rodrigoluz@bemol.com.br",
+    "fabriciomacedo@bemol.com.br",
+    "sorayamenezes@bemol.com.br",
+    "anaclemente@bemol.com.br",
+    "antonioguedes@bemol.com.br",
+    "josealmeida@bemol.com.br",
+    "tuiakyscunha@bemol.com.br"
+]
+
 # Times disponíveis
 TIMES = ["Cadastro", "SEO", "FrontEnd"]
 

@@ -32,9 +32,9 @@ class Database:
         try:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT id, nome, data FROM escalas_sexta ORDER BY data ASC")
+                    cursor.execute("SELECT id, nome, email, data FROM escalas_sexta ORDER BY data ASC")
                     result = cursor.fetchall()
-                    return [{"id": row[0], "nome": row[1], "data": str(row[2])} for row in result]
+                    return [{"id": row[0], "nome": row[1], "email": row[2], "data": str(row[3])} for row in result]
         except Exception as e:
             print(f"Erro ao buscar escalas: {e}")
             return []
@@ -57,14 +57,14 @@ class Database:
             print(f"Erro ao deletar escalas passadas: {e}")
             return 0
     
-    def add_escala(self, nome: str, data: str) -> bool:
+    def add_escala(self, nome: str, email: str, data: str) -> bool:
         """Adiciona uma nova escala de sexta-feira"""
         try:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO escalas_sexta (nome, data) VALUES (:nome, :data)",
-                        {"nome": nome, "data": data}
+                        "INSERT INTO escalas_sexta (nome, email, data) VALUES (:nome, :email, :data)",
+                        {"nome": nome, "email": email, "data": data}
                     )
                     connection.commit()
             return True
@@ -74,14 +74,14 @@ class Database:
             print(f"Erro ao adicionar escala: {e}")
             return False
     
-    def update_escala(self, escala_id: int, nome: str, data: str) -> bool:
+    def update_escala(self, escala_id: int, nome: str, email: str, data: str) -> bool:
         """Atualiza uma escala existente"""
         try:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "UPDATE escalas_sexta SET nome = :nome, data = :data WHERE id = :id",
-                        {"nome": nome, "data": data, "id": escala_id}
+                        "UPDATE escalas_sexta SET nome = :nome, email = :email, data = :data WHERE id = :id",
+                        {"nome": nome, "email": email, "data": data, "id": escala_id}
                     )
                     connection.commit()
             return True
@@ -108,14 +108,15 @@ class Database:
         try:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT id, nome_colaborador, nome_feriado, data, time FROM feriados ORDER BY data ASC")
+                    cursor.execute("SELECT id, nome_colaborador, email, nome_feriado, data, time FROM feriados ORDER BY data ASC")
                     result = cursor.fetchall()
                     return [{
                         "id": row[0], 
                         "nome_colaborador": row[1], 
-                        "nome_feriado": row[2], 
-                        "data": str(row[3]), 
-                        "time": row[4]
+                        "email": row[2],
+                        "nome_feriado": row[3], 
+                        "data": str(row[4]), 
+                        "time": row[5]
                     } for row in result]
         except Exception as e:
             print(f"Erro ao buscar feriados: {e}")
@@ -139,14 +140,14 @@ class Database:
             print(f"Erro ao deletar feriados passados: {e}")
             return 0
     
-    def add_feriado(self, nome_colaborador: str, nome_feriado: str, data: str, time: str) -> bool:
+    def add_feriado(self, nome_colaborador: str, email: str, nome_feriado: str, data: str, time: str) -> bool:
         """Adiciona um novo feriado"""
         try:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO feriados (nome_colaborador, nome_feriado, data, time) VALUES (:nome_colaborador, :nome_feriado, :data, :time)",
-                        {"nome_colaborador": nome_colaborador, "nome_feriado": nome_feriado, "data": data, "time": time}
+                        "INSERT INTO feriados (nome_colaborador, email, nome_feriado, data, time) VALUES (:nome_colaborador, :email, :nome_feriado, :data, :time)",
+                        {"nome_colaborador": nome_colaborador, "email": email, "nome_feriado": nome_feriado, "data": data, "time": time}
                     )
                     connection.commit()
             return True
@@ -155,14 +156,14 @@ class Database:
             return False
     
     def update_feriado(self, feriado_id: int, nome_colaborador: str, 
-                       nome_feriado: str, data: str, time: str) -> bool:
+                       email: str, nome_feriado: str, data: str, time: str) -> bool:
         """Atualiza um feriado existente"""
         try:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "UPDATE feriados SET nome_colaborador = :nome_colaborador, nome_feriado = :nome_feriado, data = :data, time = :time WHERE id = :id",
-                        {"nome_colaborador": nome_colaborador, "nome_feriado": nome_feriado, "data": data, "time": time, "id": feriado_id}
+                        "UPDATE feriados SET nome_colaborador = :nome_colaborador, email = :email, nome_feriado = :nome_feriado, data = :data, time = :time WHERE id = :id",
+                        {"nome_colaborador": nome_colaborador, "email": email, "nome_feriado": nome_feriado, "data": data, "time": time, "id": feriado_id}
                     )
                     connection.commit()
             return True
