@@ -45,12 +45,12 @@ class Database:
             today_str = date.today().isoformat()
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT COUNT(*) as count FROM escalas_sexta WHERE data < %s", (today_str,))
+                    cursor.execute("SELECT COUNT(*) as count FROM escalas_sexta WHERE data < :data", {"data": today_str})
                     count_row = cursor.fetchone()
                     count = count_row[0] if count_row else 0
                     
                     if count > 0:
-                        cursor.execute("DELETE FROM escalas_sexta WHERE data < %s", (today_str,))
+                        cursor.execute("DELETE FROM escalas_sexta WHERE data < :data", {"data": today_str})
                         connection.commit()
                     return count
         except Exception as e:
@@ -63,8 +63,8 @@ class Database:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO escalas_sexta (nome, data) VALUES (%s, %s)",
-                        (nome, data)
+                        "INSERT INTO escalas_sexta (nome, data) VALUES (:nome, :data)",
+                        {"nome": nome, "data": data}
                     )
                     connection.commit()
             return True
@@ -78,8 +78,8 @@ class Database:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "UPDATE escalas_sexta SET nome = %s, data = %s WHERE id = %s",
-                        (nome, data, escala_id)
+                        "UPDATE escalas_sexta SET nome = :nome, data = :data WHERE id = :id",
+                        {"nome": nome, "data": data, "id": escala_id}
                     )
                     connection.commit()
             return True
@@ -92,7 +92,7 @@ class Database:
         try:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute("DELETE FROM escalas_sexta WHERE id = %s", (escala_id,))
+                    cursor.execute("DELETE FROM escalas_sexta WHERE id = :id", {"id": escala_id})
                     connection.commit()
             return True
         except Exception as e:
@@ -125,12 +125,12 @@ class Database:
             today_str = date.today().isoformat()
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT COUNT(*) as count FROM feriados WHERE data < %s", (today_str,))
+                    cursor.execute("SELECT COUNT(*) as count FROM feriados WHERE data < :data", {"data": today_str})
                     count_row = cursor.fetchone()
                     count = count_row[0] if count_row else 0
                     
                     if count > 0:
-                        cursor.execute("DELETE FROM feriados WHERE data < %s", (today_str,))
+                        cursor.execute("DELETE FROM feriados WHERE data < :data", {"data": today_str})
                         connection.commit()
                     return count
         except Exception as e:
@@ -143,8 +143,8 @@ class Database:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO feriados (nome_colaborador, nome_feriado, data, time) VALUES (%s, %s, %s, %s)",
-                        (nome_colaborador, nome_feriado, data, time)
+                        "INSERT INTO feriados (nome_colaborador, nome_feriado, data, time) VALUES (:nome_colaborador, :nome_feriado, :data, :time)",
+                        {"nome_colaborador": nome_colaborador, "nome_feriado": nome_feriado, "data": data, "time": time}
                     )
                     connection.commit()
             return True
@@ -159,8 +159,8 @@ class Database:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
                     cursor.execute(
-                        "UPDATE feriados SET nome_colaborador = %s, nome_feriado = %s, data = %s, time = %s WHERE id = %s",
-                        (nome_colaborador, nome_feriado, data, time, feriado_id)
+                        "UPDATE feriados SET nome_colaborador = :nome_colaborador, nome_feriado = :nome_feriado, data = :data, time = :time WHERE id = :id",
+                        {"nome_colaborador": nome_colaborador, "nome_feriado": nome_feriado, "data": data, "time": time, "id": feriado_id}
                     )
                     connection.commit()
             return True
@@ -173,7 +173,7 @@ class Database:
         try:
             with self.get_connection() as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute("DELETE FROM feriados WHERE id = %s", (feriado_id,))
+                    cursor.execute("DELETE FROM feriados WHERE id = :id", {"id": feriado_id})
                     connection.commit()
             return True
         except Exception as e:
