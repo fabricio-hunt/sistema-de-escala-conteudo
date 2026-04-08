@@ -2,17 +2,18 @@
 Aplicação Streamlit - Tela de Administração
 """
 import streamlit as st
+
+# Configuração da página DEVE ser o primeiro comando Streamlit executado
+st.set_page_config(
+    page_title="Sistema de Escala - Admin",
+    page_icon="📅",
+    layout="wide"
+)
+
 from models.database import Database
 from views.admin_view import AdminView
 from controllers.auth import AuthController
 import config
-
-# Configuração da página
-st.set_page_config(
-    page_title=f"{config.APP_TITLE} - Admin",
-    page_icon=config.APP_ICON,
-    layout="wide"
-)
 
 # CSS customizado
 st.markdown("""
