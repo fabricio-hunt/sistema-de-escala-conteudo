@@ -66,7 +66,7 @@ EMAILS_BEMOL = [
     "carolinacosta@bemol.com.br",
     "rodrigoluz@bemol.com.br",
     "fabriciomacedo@bemol.com.br",
-    "sorayamenezes@bemol.com.br",
+    "sorayameneses@bemol.com.br",
     "anaclemente@bemol.com.br",
     "antonioguedes@bemol.com.br",
     "josealmeida@bemol.com.br",
