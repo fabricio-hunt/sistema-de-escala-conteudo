@@ -190,9 +190,9 @@ Edit `.env` with your credentials:
 
 ```env
 # Databricks Configuration
-DATABRICKS_SERVER_HOSTNAME=adb-926216925051160.0.azuredatabricks.net
-DATABRICKS_HTTP_PATH=sql/protocolv1/o/926216925051160/0325-154030-toes330
-DATABRICKS_TOKEN=your_personal_access_token_here
+DATABRICKS_SERVER_HOSTNAME
+DATABRICKS_HTTP_PATH
+DATABRICKS_TOKEN
 
 # Application Security
 ADMIN_PASSWORD=your_secure_password_here
